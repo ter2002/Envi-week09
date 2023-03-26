@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Week9</title>
+  </head>
+  <body>
+    <form id="myForm" method="post" action="/process-image">
+      <label for="firstName">First Name:</label>
+      <input type="text" id="firstName" name="firstName" /><br /><br />
+
+      <label for="lastName">Last Name:</label>
+      <input type="text" id="lastName" name="lastName" /><br /><br />
+
+      <label for="studentID">Student ID:</label>
+      <input type="number" id="studentID" name="studentID" /><br /><br />
+
+      <label for="imageUpload">Select an image:</label>
+      <input
+        type="file"
+        id="file"
+        name="imageUpload"
+        onchange="convertIMG(event)"
+      /><br /><br />
+
+      <button type="button" onclick="convert()">convert</button>
+    </form>
+  </body>
+  <script>
+    function convertIMG(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.addEventListener("load", function () {
+        imageString = reader.result;
+      });
+      let upload_image = document.getElementById("before");
+      upload_image.src = URL.createObjectURL(event.target.files[0]);
+      document.getElementById("before").width = "400";
+      document.getElementById("before").height = "400";
+      reader.readAsDataURL(file);
+    }
+
+    async function convert() {
+      const payloads = {
+        image: imageString,
+        firstName: "John",
+        lastName: "Doe",
+        studentID: [1, 2, 3, 4, 5],
+      };
+      const request = await fetch("http://44.203.179.173:8088/process-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payloads),
+      });
+      const response = await request.json();
+      document.getElementById("converted").src = response.processed_image;
+      document.getElementById("converted").width = "400";
+      document.getElementById("converted").height = "400";
+    }
+  </script>
+</html>
